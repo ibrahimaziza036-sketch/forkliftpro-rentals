@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: "ForkliftPro Website <noreply@forkliftprorentals.com>",
+          from: "ForkliftPro Rentals <info@forkliftprorentals.com>",
           to: [CONTACT_EMAIL],
           subject: `New Quote Request: ${safeService} — ${safeName}`,
           html: `
