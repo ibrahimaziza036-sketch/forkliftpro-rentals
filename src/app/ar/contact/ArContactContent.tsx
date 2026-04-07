@@ -17,7 +17,7 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { SITE_CONFIG } from "@/lib/constants";
-import TurnstileWidget from "@/components/ui/TurnstileWidget";
+
 
 /* ------------------------------------------------------------------ */
 /*  Zod schema                                                         */
@@ -108,7 +108,7 @@ function ContactCard({
 export default function ArContactContent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string>("");
+
 
   const {
     register,
@@ -131,7 +131,6 @@ export default function ArContactContent() {
           phone: data.phone,
           service: data.serviceNeeded,
           message: data.message,
-          turnstileToken,
         }),
       });
 
@@ -363,9 +362,6 @@ export default function ArContactContent() {
                     </p>
                   )}
                 </div>
-
-                {/* Turnstile */}
-                <TurnstileWidget onVerify={setTurnstileToken} />
 
                 {/* Privacy Consent */}
                 <div className="flex items-start gap-3">

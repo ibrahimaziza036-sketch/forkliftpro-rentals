@@ -6,32 +6,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY || "";
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL_TO || "info@forkliftprorentals.com";
-
-/* ------------------------------------------------------------------ */
-/*  Turnstile verification                                             */
-/* ------------------------------------------------------------------ */
-async function verifyTurnstile(token: string): Promise<boolean> {
-  if (!TURNSTILE_SECRET) return true;
-  try {
-    const res = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: TURNSTILE_SECRET,
-          response: token,
-        }),
-      }
-    );
-    const data = await res.json();
-    return data.success === true;
-  } catch {
-    return false;
-  }
-}
 
 /* ------------------------------------------------------------------ */
 /*  Input sanitization                                                 */
@@ -116,17 +91,6 @@ export async function POST(request: NextRequest) {
         { error: "Message must be under 2000 characters" },
         { status: 400 }
       );
-    }
-
-    // Verify Turnstile CAPTCHA
-    if (TURNSTILE_SECRET && body.turnstileToken) {
-      const isHuman = await verifyTurnstile(body.turnstileToken);
-      if (!isHuman) {
-        return NextResponse.json(
-          { error: "CAPTCHA verification failed. Please try again." },
-          { status: 403 }
-        );
-      }
     }
 
     // Sanitize all inputs

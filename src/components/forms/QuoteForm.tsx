@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Loader2, AlertCircle } from "lucide-react";
-import TurnstileWidget from "@/components/ui/TurnstileWidget";
+
 
 const SERVICE_OPTIONS = [
   "Forklift Rental",
@@ -35,7 +35,7 @@ export default function QuoteForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
 
   const {
     register,
@@ -52,14 +52,6 @@ export default function QuoteForm() {
     },
   });
 
-  const onTurnstileVerify = useCallback((token: string) => {
-    setTurnstileToken(token);
-  }, []);
-
-  const onTurnstileExpire = useCallback(() => {
-    setTurnstileToken(null);
-  }, []);
-
   const onSubmit = async (data: QuoteFormData) => {
     setLoading(true);
     setApiError(null);
@@ -73,7 +65,6 @@ export default function QuoteForm() {
           phone: data.phone,
           serviceType: data.serviceType,
           message: data.message || "",
-          ...(turnstileToken ? { turnstileToken } : {}),
         }),
       });
 
@@ -96,7 +87,6 @@ export default function QuoteForm() {
     reset();
     setSubmitted(false);
     setApiError(null);
-    setTurnstileToken(null);
   };
 
   if (submitted) {
@@ -215,9 +205,6 @@ export default function QuoteForm() {
           className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20"
         />
       </div>
-
-      {/* Turnstile CAPTCHA */}
-      <TurnstileWidget onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
 
       {/* Submit */}
       <button

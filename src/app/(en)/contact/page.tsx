@@ -18,7 +18,7 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { SITE_CONFIG } from "@/lib/constants";
-import TurnstileWidget from "@/components/ui/TurnstileWidget";
+
 
 /* ------------------------------------------------------------------ */
 /*  Zod schema                                                         */
@@ -125,7 +125,7 @@ function ContactCard({
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string>("");
+
 
   const {
     register,
@@ -152,7 +152,7 @@ export default function ContactPage() {
           service: data.serviceNeeded,
           preferredContact: data.preferredContact,
           message: data.message,
-          turnstileToken,
+
         }),
       });
 
@@ -449,12 +449,6 @@ export default function ContactPage() {
                         </p>
                       )}
                     </div>
-
-                    {/* CAPTCHA */}
-                    <TurnstileWidget
-                      onVerify={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken("")}
-                    />
 
                     {/* Submit */}
                     <button

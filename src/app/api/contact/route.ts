@@ -6,32 +6,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY || "";
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL_TO || "info@forkliftprorentals.com";
-
-/* ------------------------------------------------------------------ */
-/*  Turnstile verification                                             */
-/* ------------------------------------------------------------------ */
-async function verifyTurnstile(token: string): Promise<boolean> {
-  if (!TURNSTILE_SECRET) return true; // Skip if not configured
-  try {
-    const res = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: TURNSTILE_SECRET,
-          response: token,
-        }),
-      }
-    );
-    const data = await res.json();
-    return data.success === true;
-  } catch {
-    return false;
-  }
-}
 
 /* ------------------------------------------------------------------ */
 /*  Simple input sanitization                                          */
@@ -71,8 +46,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, email, phone, company, service, message, turnstileToken } =
-      body;
+    const { name, email, phone, company, service, message } = body;
 
     // --- Validate required fields ---
     if (!name || !email || !phone || !message) {
@@ -89,17 +63,6 @@ export async function POST(request: Request) {
         { error: "Invalid email address" },
         { status: 400 }
       );
-    }
-
-    // --- Verify Turnstile CAPTCHA ---
-    if (TURNSTILE_SECRET && turnstileToken) {
-      const isHuman = await verifyTurnstile(turnstileToken);
-      if (!isHuman) {
-        return NextResponse.json(
-          { error: "CAPTCHA verification failed. Please try again." },
-          { status: 403 }
-        );
-      }
     }
 
     // --- Sanitize inputs ---
