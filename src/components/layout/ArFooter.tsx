@@ -311,6 +311,17 @@ export default function ArFooter() {
             <p className="text-sm text-gray-500 text-center md:text-right">
               &copy; {currentYear} فوركليفت برو للإيجار. جميع الحقوق محفوظة.
             </p>
+            <p className="text-sm text-gray-500 text-center md:text-right">
+              تم تطوير الموقع بواسطة{" "}
+              <a
+                href="https://corpnexsolutions.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 font-semibold transition-colors"
+              >
+                Corpnex Solution
+              </a>
+            </p>
             <div className="flex items-center gap-6">
               <Link
                 href="/privacy-policy"

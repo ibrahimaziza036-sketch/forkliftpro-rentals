@@ -265,6 +265,17 @@ export default function Footer() {
             <p className="text-sm text-gray-500 text-center md:text-left">
               &copy; {currentYear} ForkliftPro Rentals. All rights reserved.
             </p>
+            <p className="text-sm text-gray-500 text-center md:text-left">
+              Website powered by{" "}
+              <a
+                href="https://corpnexsolutions.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 font-semibold transition-colors"
+              >
+                Corpnex Solution
+              </a>
+            </p>
             <div className="flex items-center gap-6">
               <Link
                 href="/privacy-policy"
