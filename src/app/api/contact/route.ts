@@ -29,7 +29,6 @@ async function verifyTurnstile(token: string): Promise<boolean> {
     const data = await res.json();
     return data.success === true;
   } catch {
-    // Turnstile verification failed — silent
     return false;
   }
 }
@@ -39,6 +38,7 @@ async function verifyTurnstile(token: string): Promise<boolean> {
 /* ------------------------------------------------------------------ */
 function sanitize(input: string): string {
   return input
+    .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     // --- Rate limiting (5 requests per minute per IP) ---
     const forwarded = request.headers.get("x-forwarded-for");
     const ip = forwarded?.split(",")[0]?.trim() || "unknown";
-    const limit = rateLimit(ip, { maxRequests: 5, windowSec: 60 });
+    const limit = await rateLimit(ip, { maxRequests: 5, windowSec: 60 });
 
     if (!limit.success) {
       return NextResponse.json(
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     }
 
     // --- Validate email format ---
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: "Invalid email address" },
@@ -117,11 +117,11 @@ export async function POST(request: Request) {
           from: "ForkliftPro Website <onboarding@resend.dev>",
           to: [CONTACT_EMAIL],
           replyTo: safeEmail,
-          subject: `🔔 New Inquiry: ${safeService || "General"} — ${safeName}`,
+          subject: `New Inquiry: ${safeService || "General"} — ${safeName}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <div style="background: #1A1A2E; padding: 20px; border-radius: 8px 8px 0 0;">
-                <h1 style="color: #FF6B00; margin: 0; font-size: 24px;">New Forklift Inquiry</h1>
+                <h1 style="color: #FF6B00; margin: 0; font-size: 24px;">New Contact Inquiry</h1>
                 <p style="color: #ccc; margin: 5px 0 0;">via forkliftprorentals.com</p>
               </div>
               <div style="background: #f9f9f9; padding: 20px; border: 1px solid #eee;">
@@ -156,12 +156,10 @@ export async function POST(request: Request) {
         });
       } catch {
         // Silently handle — don't expose error details in production
-        // Don't fail the request — log and continue
       }
     } else {
-      // Resend not configured — silently accept (no customer data in logs)
       if (process.env.NODE_ENV === "development") {
-        console.warn("⚠️  RESEND_API_KEY not set. Email was NOT sent.");
+        console.warn("RESEND_API_KEY not set. Email was NOT sent.");
       }
     }
 
@@ -170,7 +168,6 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch {
-    // Server error — no customer data leaked
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

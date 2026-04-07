@@ -1,5 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 import { rateLimit } from "@/lib/rate-limit";
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY || "";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL_TO || "info@forkliftprorentals.com";
+
+/* ------------------------------------------------------------------ */
+/*  Turnstile verification                                             */
+/* ------------------------------------------------------------------ */
+async function verifyTurnstile(token: string): Promise<boolean> {
+  if (!TURNSTILE_SECRET) return true;
+  try {
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: TURNSTILE_SECRET,
+          response: token,
+        }),
+      }
+    );
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /*  Input sanitization                                                 */
@@ -28,7 +60,7 @@ export async function POST(request: NextRequest) {
       request.headers.get("x-real-ip") ??
       "unknown";
 
-    const { success, resetAt } = rateLimit(ip);
+    const { success, resetAt } = await rateLimit(ip);
     if (!success) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
       return NextResponse.json(
@@ -86,19 +118,75 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Sanitize all inputs — ready for database storage
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const sanitizedData = {
-      name: sanitize(body.name),
-      phone: sanitize(body.phone),
-      serviceType: sanitize(body.serviceType),
-      email: body.email ? sanitize(body.email) : undefined,
-      message: body.message ? sanitize(body.message) : undefined,
-      source: body.source ? sanitize(String(body.source).slice(0, 50)) : undefined,
-    };
+    // Verify Turnstile CAPTCHA
+    if (TURNSTILE_SECRET && body.turnstileToken) {
+      const isHuman = await verifyTurnstile(body.turnstileToken);
+      if (!isHuman) {
+        return NextResponse.json(
+          { error: "CAPTCHA verification failed. Please try again." },
+          { status: 403 }
+        );
+      }
+    }
 
-    // In production: save _sanitizedData to database, send email/WhatsApp notification
-    // No customer data logged for privacy compliance
+    // Sanitize all inputs
+    const safeName = sanitize(body.name);
+    const safePhone = sanitize(body.phone);
+    const safeService = sanitize(body.serviceType);
+    const safeEmail = body.email ? sanitize(body.email) : "";
+    const safeMessage = body.message ? sanitize(body.message) : "";
+    const safeSource = body.source ? sanitize(String(body.source).slice(0, 50)) : "Website";
+
+    // Send email notification via Resend
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: "ForkliftPro Website <onboarding@resend.dev>",
+          to: [CONTACT_EMAIL],
+          ...(safeEmail ? { replyTo: safeEmail } : {}),
+          subject: `New Lead: ${safeService} — ${safeName}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: #1A1A2E; padding: 20px; border-radius: 8px 8px 0 0;">
+                <h1 style="color: #FF6B00; margin: 0; font-size: 24px;">New Lead Captured</h1>
+                <p style="color: #ccc; margin: 5px 0 0;">Source: ${safeSource}</p>
+              </div>
+              <div style="background: #f9f9f9; padding: 20px; border: 1px solid #eee;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #333; width: 120px;">Name:</td>
+                    <td style="padding: 8px 0; color: #555;">${safeName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #333;">Phone:</td>
+                    <td style="padding: 8px 0; color: #555;"><a href="tel:${safePhone}">${safePhone}</a></td>
+                  </tr>
+                  ${safeEmail ? `<tr><td style="padding: 8px 0; font-weight: bold; color: #333;">Email:</td><td style="padding: 8px 0; color: #555;">${safeEmail}</td></tr>` : ""}
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #333;">Service:</td>
+                    <td style="padding: 8px 0; color: #555;">${safeService}</td>
+                  </tr>
+                </table>
+                ${safeMessage ? `
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0;" />
+                <p style="font-weight: bold; color: #333; margin-bottom: 8px;">Message:</p>
+                <p style="color: #555; line-height: 1.6; white-space: pre-wrap;">${safeMessage}</p>
+                ` : ""}
+              </div>
+              <div style="background: #1A1A2E; padding: 12px 20px; border-radius: 0 0 8px 8px; text-align: center;">
+                <p style="color: #888; font-size: 12px; margin: 0;">ForkliftPro Rentals — Jeddah, Saudi Arabia</p>
+              </div>
+            </div>
+          `,
+        });
+      } catch {
+        // Silently handle — don't expose error details
+      }
+    } else {
+      if (process.env.NODE_ENV === "development") {
+        console.warn("RESEND_API_KEY not set. Lead email was NOT sent.");
+      }
+    }
 
     return NextResponse.json(
       {

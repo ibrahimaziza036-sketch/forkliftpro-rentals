@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const SERVICE_OPTIONS = [
   "Forklift Rental",
@@ -33,6 +34,8 @@ type QuoteFormData = z.infer<typeof quoteSchema>;
 export default function QuoteForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const {
     register,
@@ -49,17 +52,51 @@ export default function QuoteForm() {
     },
   });
 
-  const onSubmit = async () => {
+  const onTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const onTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  const onSubmit = async (data: QuoteFormData) => {
     setLoading(true);
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
-    setSubmitted(true);
+    setApiError(null);
+
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          phone: data.phone,
+          serviceType: data.serviceType,
+          message: data.message || "",
+          ...(turnstileToken ? { turnstileToken } : {}),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setApiError(result.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setApiError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReset = () => {
     reset();
     setSubmitted(false);
+    setApiError(null);
+    setTurnstileToken(null);
   };
 
   if (submitted) {
@@ -70,7 +107,7 @@ export default function QuoteForm() {
         </div>
         <h3 className="mb-2 text-2xl font-bold text-gray-900">Quote Request Sent!</h3>
         <p className="mb-6 text-gray-600">
-          Thank you for your interest. Our team will get back to you within 24 hours with a
+          Thank you for your interest. Our team will get back to you within 30 minutes with a
           customized quote.
         </p>
         <button
@@ -92,6 +129,14 @@ export default function QuoteForm() {
       <h3 className="mb-1 text-2xl font-bold text-gray-900">Get a Quick Quote</h3>
       <p className="mb-8 text-gray-500">Fill in the details and we will get back to you shortly.</p>
 
+      {/* API Error */}
+      {apiError && (
+        <div className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+          <p className="text-sm text-red-700">{apiError}</p>
+        </div>
+      )}
+
       {/* Name */}
       <div className="mb-5">
         <label htmlFor="quote-name" className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -100,7 +145,7 @@ export default function QuoteForm() {
         <input
           id="quote-name"
           type="text"
-          placeholder="John Doe"
+          placeholder="e.g. Ahmed Al-Rashid"
           {...register("name")}
           className={`w-full rounded-lg border px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 ${
             errors.name ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-300"
@@ -119,7 +164,7 @@ export default function QuoteForm() {
         <input
           id="quote-phone"
           type="tel"
-          placeholder="+92 300 1234567"
+          placeholder="+966 5X XXX XXXX"
           {...register("phone")}
           className={`w-full rounded-lg border px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 ${
             errors.phone ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : "border-gray-300"
@@ -171,11 +216,14 @@ export default function QuoteForm() {
         />
       </div>
 
+      {/* Turnstile CAPTCHA */}
+      <TurnstileWidget onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
+
       {/* Submit */}
       <button
         type="submit"
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-yellow-500 px-6 py-3.5 text-base font-bold text-gray-900 transition-colors hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-yellow-500 px-6 py-3.5 text-base font-bold text-gray-900 transition-colors hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {loading ? (
           <>

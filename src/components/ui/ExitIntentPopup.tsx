@@ -34,15 +34,31 @@ export default function ExitIntentPopup() {
     setDismissed(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-      setTimeout(() => {
-        setIsVisible(false);
-        setDismissed(true);
-      }, 2500);
+    if (!email) return;
+
+    try {
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Exit Popup Lead",
+          phone: "N/A",
+          serviceType: "Forklift Rental",
+          email,
+          source: "exit-intent-popup",
+        }),
+      });
+    } catch {
+      // Still show success — don't block UX for analytics failure
     }
+
+    setSubmitted(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      setDismissed(true);
+    }, 2500);
   };
 
   return (
