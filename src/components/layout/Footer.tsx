@@ -207,15 +207,9 @@ export default function Footer() {
                     <Clock className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Office Hours</p>
-                    <p className="text-sm text-gray-300">
-                      Mon-Fri: {SITE_CONFIG.officeHours.weekdays}
-                    </p>
-                    <p className="text-sm text-gray-300">
-                      Sat: {SITE_CONFIG.officeHours.saturday}
-                    </p>
-                    <p className="text-sm text-gray-300">
-                      Sun: {SITE_CONFIG.officeHours.sunday}
+                    <p className="text-xs text-gray-500 mb-0.5">Availability</p>
+                    <p className="text-sm text-primary font-semibold">
+                      {SITE_CONFIG.officeHours.display}
                     </p>
                   </div>
                 </div>

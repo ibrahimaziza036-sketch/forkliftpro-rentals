@@ -25,9 +25,10 @@ export const SITE_CONFIG = {
     youtube: "https://youtube.com/@forkliftprorentals",
   },
   officeHours: {
-    weekdays: "8:00 AM – 6:00 PM",
-    saturday: "8:00 AM – 4:00 PM",
-    sunday: "Emergency rentals available",
+    weekdays: "24/7",
+    saturday: "24/7",
+    sunday: "24/7",
+    display: "Open 24 Hours — 7 Days a Week",
   },
 } as const;
 

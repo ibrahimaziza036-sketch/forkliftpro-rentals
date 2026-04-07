@@ -539,21 +539,10 @@ export default function ContactPage() {
                 <p>{SITE_CONFIG.address}</p>
               </ContactCard>
 
-              <ContactCard icon={Clock} title="Office Hours">
-                <div className="space-y-1">
-                  <p>
-                    <span className="font-medium">Mon – Fri:</span>{" "}
-                    {SITE_CONFIG.officeHours.weekdays}
-                  </p>
-                  <p>
-                    <span className="font-medium">Saturday:</span>{" "}
-                    {SITE_CONFIG.officeHours.saturday}
-                  </p>
-                  <p>
-                    <span className="font-medium">Sunday:</span>{" "}
-                    {SITE_CONFIG.officeHours.sunday}
-                  </p>
-                </div>
+              <ContactCard icon={Clock} title="Availability">
+                <p className="text-primary font-semibold text-lg">
+                  {SITE_CONFIG.officeHours.display}
+                </p>
               </ContactCard>
             </motion.div>
           </motion.div>
