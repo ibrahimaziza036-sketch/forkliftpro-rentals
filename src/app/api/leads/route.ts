@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: "ForkliftPro Rentals <info@forkliftprorentals.com>",
+          from: "ForkliftPro Rentals <noreply@forkliftprorentals.com>",
           to: [CONTACT_EMAIL],
           ...(safeEmail ? { replyTo: safeEmail } : {}),
           subject: `New Lead: ${safeService} — ${safeName}`,
