@@ -36,7 +36,7 @@ export default function ArabicLayout({
   return (
     <div dir="rtl" lang="ar" className="font-body">
       <ArHeader />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 pt-16 lg:pt-[7.5rem]">
         {children}
       </main>
       <ArFooter />

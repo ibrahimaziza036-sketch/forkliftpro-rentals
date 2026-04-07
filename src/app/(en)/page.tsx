@@ -175,7 +175,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/*  1. HERO SECTION                                              */}
       {/* ============================================================ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden -mt-16 lg:-mt-[7.5rem]">
         {/* Background image */}
         <Image
           src="/images/hero/banner-final.png"

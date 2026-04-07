@@ -9,7 +9,7 @@ export default function EnglishLayout({ children }: { children: React.ReactNode 
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <Header />
-      <main id="main-content" className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1 pt-16 lg:pt-[7.5rem]">{children}</main>
       <Footer />
       <WhatsAppButton />
       <ScrollToTop />

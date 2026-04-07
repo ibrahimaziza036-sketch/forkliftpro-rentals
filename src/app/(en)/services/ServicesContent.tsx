@@ -199,7 +199,7 @@ export default function ServicesContent() {
   return (
     <>
       {/* ========== HERO ========== */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden -mt-16 lg:-mt-[7.5rem]">
         <Image
           src="/images/hero/forklift-hero-1.jpg"
           alt="ForkliftPro Rentals - Complete forklift rental solutions"
@@ -267,7 +267,7 @@ export default function ServicesContent() {
       </section>
 
       {/* ========== QUICK NAV ========== */}
-      <section className="bg-secondary py-6 sticky top-0 z-40 border-b border-gray-700">
+      <section className="bg-secondary py-6 sticky top-16 lg:top-[7.5rem] z-40 border-b border-gray-700">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6">
             {SERVICES.map((service, idx) => {
