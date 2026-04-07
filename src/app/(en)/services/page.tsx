@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://forkliftprorentals.com/services",
+    languages: { en: "https://forkliftprorentals.com/services", ar: "https://forkliftprorentals.com/ar/services" },
   },
 };
 

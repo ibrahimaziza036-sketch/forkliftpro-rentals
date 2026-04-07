@@ -8,9 +8,11 @@ export const metadata: Metadata = {
     title: "About ForkliftPro Rentals | Jeddah's Leading Forklift Company",
     description:
       "Learn about ForkliftPro Rentals — Jeddah's most trusted forklift rental company. Over 15 years of experience.",
+    images: [{ url: "https://forkliftprorentals.com/images/og-image.jpg", width: 1200, height: 630 }],
   },
   alternates: {
     canonical: "https://forkliftprorentals.com/about",
+    languages: { en: "https://forkliftprorentals.com/about", ar: "https://forkliftprorentals.com/ar/about" },
   },
 };
 

@@ -167,7 +167,7 @@ export default function BlogContent() {
     <>
       {/* Hero Section */}
       <section className="relative bg-[#1A1A2E] py-20 overflow-hidden">
-        <Image src="/images/hero/forklift-hero-2.jpg" alt="" fill className="object-cover opacity-20" sizes="100vw" priority />
+        <Image src="/images/hero/forklift-hero-2.jpg" alt="Forklift blog hero background" fill className="object-cover opacity-20" sizes="100vw" priority />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#FF6B00] rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0066CC] rounded-full blur-3xl" />

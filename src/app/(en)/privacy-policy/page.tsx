@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: "Privacy Policy | ForkliftPro Rentals",
   description:
     "Read the ForkliftPro Rentals privacy policy. Learn how we collect, use, and protect your personal information when you use our forklift rental services in Saudi Arabia.",
+  openGraph: {
+    title: "Privacy Policy | ForkliftPro Rentals",
+    description: "Read the ForkliftPro Rentals privacy policy. Learn how we collect, use, and protect your personal information.",
+    images: [{ url: "https://forkliftprorentals.com/images/og-image.jpg", width: 1200, height: 630 }],
+  },
   alternates: {
     canonical: "https://forkliftprorentals.com/privacy-policy",
   },

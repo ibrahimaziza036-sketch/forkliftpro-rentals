@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: "Terms of Service | ForkliftPro Rentals",
   description:
     "Terms and conditions for ForkliftPro Rentals. Understand the terms governing forklift rental services in Saudi Arabia.",
+  openGraph: {
+    title: "Terms of Service | ForkliftPro Rentals",
+    description: "Terms and conditions for ForkliftPro Rentals forklift rental services in Saudi Arabia.",
+    images: [{ url: "https://forkliftprorentals.com/images/og-image.jpg", width: 1200, height: 630 }],
+  },
   alternates: {
     canonical: "https://forkliftprorentals.com/terms-of-service",
   },

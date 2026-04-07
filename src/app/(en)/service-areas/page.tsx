@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     description:
       "Forklift rental across Jeddah and Western Saudi Arabia. Fast delivery and 24/7 support.",
     type: "website",
+    images: [{ url: "https://forkliftprorentals.com/images/og-image.jpg", width: 1200, height: 630 }],
   },
   alternates: {
     canonical: "https://forkliftprorentals.com/service-areas",
