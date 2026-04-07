@@ -143,8 +143,8 @@ export async function POST(request: NextRequest) {
             </div>
           `,
         });
-      } catch {
-        // Silently handle — don't expose error details
+      } catch (emailError) {
+        console.error("Resend email error:", emailError);
       }
     } else {
       if (process.env.NODE_ENV === "development") {
