@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "من نحن", href: "/ar/about" },
   { label: "معرض الصور", href: "/ar/gallery" },
   { label: "المدونة", href: "/ar/blog" },
-  { label: "الأسئلة الشائعة", href: "/faq" },
+
   { label: "اتصل بنا", href: "/ar/contact" },
 ];
 
