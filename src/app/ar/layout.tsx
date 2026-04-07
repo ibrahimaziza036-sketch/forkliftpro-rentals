@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import ArHeader from "@/components/layout/ArHeader";
 import ArFooter from "@/components/layout/ArFooter";
-import { generateLocalBusinessSchema, generateOrganizationSchema, generateWebsiteSchema } from "@/lib/schema";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export const metadata: Metadata = {
   title: {
@@ -34,23 +35,13 @@ export default function ArabicLayout({
 }) {
   return (
     <div dir="rtl" lang="ar" className="font-body">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateLocalBusinessSchema()) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationSchema()) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebsiteSchema()) }}
-      />
       <ArHeader />
       <main id="main-content" className="flex-1">
         {children}
       </main>
       <ArFooter />
+      <WhatsAppButton />
+      <ScrollToTop />
     </div>
   );
 }

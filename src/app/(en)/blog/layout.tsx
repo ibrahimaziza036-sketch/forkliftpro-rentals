@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Blog - Forklift Industry Insights & Expert Tips",
   description:
     "Stay updated with the latest forklift industry news, maintenance tips, safety guides, and expert advice from ForkliftPro Rentals. Your go-to resource for all things forklift.",
+  alternates: {
+    canonical: "https://forkliftprorentals.com/blog",
+  },
   keywords: [
     "forklift blog",
     "forklift tips",
@@ -18,6 +21,7 @@ export const metadata: Metadata = {
     description:
       "Stay updated with the latest forklift industry news, maintenance tips, safety guides, and expert advice from ForkliftPro Rentals.",
     type: "website",
+    images: [{ url: "https://forkliftprorentals.com/images/og-image.jpg", width: 1200, height: 630 }],
   },
 };
 

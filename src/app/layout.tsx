@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import ScrollToTop from "@/components/ui/ScrollToTop";
-import ExitIntentPopup from "@/components/ui/ExitIntentPopup";
 import { generateLocalBusinessSchema, generateOrganizationSchema, generateWebsiteSchema } from "@/lib/schema";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
@@ -99,13 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col antialiased">
         <GoogleAnalytics />
-        <a href="#main-content" className="skip-link">Skip to main content</a>
-        <Header />
-        <main id="main-content" className="flex-1">{children}</main>
-        <Footer />
-        <WhatsAppButton />
-        <ScrollToTop />
-        <ExitIntentPopup />
+        {children}
       </body>
     </html>
   );
